@@ -10,7 +10,8 @@ int main(int argc, char ** argv)
 	{
 		PSWSConfig::Inst()->Print();
 		if ((*PSWSConfig::Inst()->config->type) == true) {
-			PSWSServer().Start(argc, argv);
+			PSWSServerAsync().Start(argc, argv);
+			//PSWSServer().Start(argc, argv);
 		}
 		else
 		{

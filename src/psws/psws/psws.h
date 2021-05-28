@@ -6,4 +6,5 @@
 #include <pswsheader.h>
 #include <pswsconfig.h>
 #include <pswsclient.h>
+#include <pswsserverasync.h>
 #include <pswsserver.h>

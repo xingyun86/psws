@@ -31,6 +31,8 @@ std::string format_string(const char* format, Args... args) {
 #include <oatpp/network/tcp/client/ConnectionProvider.hpp>
 #include <oatpp-websocket/ConnectionHandler.hpp>
 #include <oatpp-websocket/WebSocket.hpp>
+#include <oatpp-websocket/AsyncConnectionHandler.hpp>
+#include <oatpp-websocket/AsyncWebSocket.hpp>
 //Header files for pswsserver
 #include <oatpp/network/Server.hpp>
 #include <oatpp/network/tcp/server/ConnectionProvider.hpp>
@@ -39,6 +41,7 @@ std::string format_string(const char* format, Args... args) {
 #include <oatpp-websocket/WebSocket.hpp>
 #include <oatpp-websocket/Handshaker.hpp>
 #include <oatpp/web/server/HttpConnectionHandler.hpp>
+#include <oatpp/web/server/AsyncHttpConnectionHandler.hpp>
 #include <oatpp/web/server/HttpRouter.hpp>
 #include <oatpp/web/server/api/ApiController.hpp>
 #include <oatpp/core/Types.hpp>
