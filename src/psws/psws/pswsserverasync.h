@@ -21,7 +21,7 @@ public:
 	{}
 public:
 
-	ENDPOINT_ASYNC("GET", "/async", RootAsync) {
+	ENDPOINT_ASYNC("GET", "/", RootAsync) {
 
 		ENDPOINT_ASYNC_INIT(RootAsync)
 
@@ -35,7 +35,7 @@ public:
 			"<p>"
 			"<code>"
 			"websocket endpoint is: "
-			+ format_string("ws://%s:%d/%s", PSWSConfig::Inst()->config->host->c_str(), (*PSWSConfig::Inst()->config->port), PSWSConfig::Inst()->config->path->c_str())
+			+ format_string("%s://%s:%d/%s", (*PSWSConfig::Inst()->config->ssl ? "wss":"ws"), PSWSConfig::Inst()->config->host->c_str(), (*PSWSConfig::Inst()->config->port), PSWSConfig::Inst()->config->path->c_str())
 			+ "<br>"
 			"</code>"
 			"</p>"
@@ -47,7 +47,7 @@ public:
 		}
 	};
 
-	ENDPOINT_ASYNC("GET", "wsasync", wsasync) {
+	ENDPOINT_ASYNC("GET", PSWSConfig::Inst()->config->path, wsasync) {
 
 		ENDPOINT_ASYNC_INIT(wsasync)
 
@@ -185,7 +185,30 @@ public:
 	 *  Create ConnectionProvider component which listens on the port
 	 */
 	OATPP_CREATE_COMPONENT(std::shared_ptr<oatpp::network::ServerConnectionProvider>, serverConnectionProvider)([] {
-		return oatpp::network::tcp::server::ConnectionProvider::createShared({ PSWSConfig::Inst()->config->host->c_str(), (*PSWSConfig::Inst()->config->port), oatpp::network::Address::IP_4 });
+		bool isTls = true;
+		std::shared_ptr<oatpp::network::ServerConnectionProvider> result;
+		if (isTls)
+		{
+			oatpp::String tlsCertificateChainPath = "test_cert.crt";
+			oatpp::String tlsPrivateKeyPath = "test_key.pem";
+			auto tlsServerConfig = oatpp::libressl::Config::createDefaultServerConfigShared(
+				tlsCertificateChainPath->c_str(),
+				tlsPrivateKeyPath->c_str()
+			);
+
+			/**
+			 * if you see such error:
+			 * oatpp::libressl::server::ConnectionProvider:Error on call to 'tls_configure'. ssl context failure
+			 * It might be because you have several ssl libraries installed on your machine.
+			 * Try to make sure you are using libtls, libssl, and libcrypto from the same package
+			 */
+			result = oatpp::libressl::server::ConnectionProvider::createShared(tlsServerConfig, { PSWSConfig::Inst()->config->host->c_str(), (*PSWSConfig::Inst()->config->port), oatpp::network::Address::IP_4 });
+		}
+		else
+		{
+			result = oatpp::network::tcp::server::ConnectionProvider::createShared({ PSWSConfig::Inst()->config->host->c_str(), (*PSWSConfig::Inst()->config->port), oatpp::network::Address::IP_4 });
+		}
+		return result;
 		}());
 
 	/**

@@ -8,3 +8,5 @@
 #include <pswsclient.h>
 #include <pswsserverasync.h>
 #include <pswsserver.h>
+#include <pshttpclient.h>
+#include <pshttpclientasync.h>

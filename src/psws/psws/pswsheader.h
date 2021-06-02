@@ -48,3 +48,14 @@ std::string format_string(const char* format, Args... args) {
 #include <oatpp/core/macro/codegen.hpp>
 #include <oatpp/core/macro/component.hpp>
 #include <oatpp/parser/json/mapping/ObjectMapper.hpp>
+//
+#include <oatpp-libressl/Config.hpp>
+#include <oatpp-libressl/Callbacks.hpp>
+#include <oatpp-libressl/client/ConnectionProvider.hpp>
+#include <oatpp-libressl/server/ConnectionProvider.hpp>
+//
+#include <oatpp/core/async/Executor.hpp>
+#include <oatpp/web/client/ApiClient.hpp>
+#include <oatpp/core/macro/codegen.hpp>
+#include <oatpp/web/client/HttpRequestExecutor.hpp>
+#include <oatpp/network/tcp/client/ConnectionProvider.hpp>

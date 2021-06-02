@@ -8,6 +8,7 @@
 class Config : public oatpp::DTO {
 	DTO_INIT(Config, DTO /* extends */)
 
+	DTO_FIELD(Boolean, ssl, "ssl");
 	DTO_FIELD(Boolean, type, "type");
 	DTO_FIELD(String, host, "host");
 	DTO_FIELD(UInt16, port, "port");
@@ -24,13 +25,13 @@ public:
 	}
 	bool Check()
 	{
-		return ((config->type != nullptr) && (config->host != nullptr) && (config->port != nullptr) && (config->path != nullptr));
+		return ((config->ssl != nullptr) && (config->type != nullptr) && (config->host != nullptr) && (config->port != nullptr) && (config->path != nullptr));
 	}
 	void Print()
 	{
 		if (Check() == true)
 		{
-			std::cout << ((*config->type) ? "Server:ws://" : "Client:ws://") << config->host->c_str() << ":" << (*config->port) << "/" << config->path->c_str() << std::endl;
+			std::cout << ((*config->type) ? ((*config->ssl) ? "Server:wss://" : "Server:ws://") : ((*config->ssl) ? "Client:wss://" : "Client:ws://")) << config->host->c_str() << ":" << (*config->port) << "/" << config->path->c_str() << std::endl;
 		}
 	}
 public:

@@ -34,22 +34,28 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}
-	${CMAKE_SOURCE_DIR}/vendor/oatpp-master/src
-	${CMAKE_SOURCE_DIR}/vendor/oatpp-websocket-master/src
+	${CMAKE_SOURCE_DIR}/vendor/oatpp/src
+	${CMAKE_SOURCE_DIR}/vendor/oatpp-websocket/src
+	${CMAKE_SOURCE_DIR}/vendor/oatpp/oatpp-libressl
+	${CMAKE_SOURCE_DIR}/vendor/libressl-3.3.3/include 
 	${CMAKE_BINARY_DIR}
 )
 
 link_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${LINK_LIBS_FILE_PATH}
-	${CMAKE_BINARY_DIR}/vendor/oatpp-master
-	${CMAKE_BINARY_DIR}/vendor/oatpp-websocket-master
+	${CMAKE_BINARY_DIR}/vendor/oatpp
+	${CMAKE_BINARY_DIR}/vendor/oatpp-websocket
+	${CMAKE_BINARY_DIR}/vendor/oatpp/oatpp-libressl
+	${CMAKE_BINARY_DIR}/vendor/libressl-3.3.3/ssl 
+	${CMAKE_BINARY_DIR}/vendor/libressl-3.3.3/tls 
+	${CMAKE_BINARY_DIR}/vendor/libressl-3.3.3/crypto
 )
 
 if(MSVC)
-list(APPEND EXT_LIB oatpp oatpp-websocket)
+list(APPEND EXT_LIB oatpp oatpp-websocket oatpp-libressl)
 else(MSVC)
-list(APPEND EXT_LIB oatpp oatpp-websocket)
+list(APPEND EXT_LIB oatpp oatpp-websocket oatpp-libressl)
 endif(MSVC)
 
 file(GLOB SRCS "*.cpp")

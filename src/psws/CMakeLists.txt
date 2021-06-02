@@ -25,6 +25,8 @@ else(MSVC)
 endif(MSVC)
 
 # Include sub-projects.
-add_subdirectory ("vendor/oatpp-master")
-add_subdirectory ("vendor/oatpp-websocket-master")
+add_subdirectory ("vendor/libressl-3.3.3")
+add_subdirectory ("vendor/oatpp")
+add_subdirectory ("vendor/oatpp-libressl")
+add_subdirectory ("vendor/oatpp-websocket")
 add_subdirectory ("psws")

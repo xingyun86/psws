@@ -5,6 +5,18 @@
 
 int main(int argc, char ** argv)
 {
+	/* set lockingCallback for libressl */
+	oatpp::libressl::Callbacks::setDefaultCallbacks();
+	/*{
+		PSHttpClientAsync httpClient = {};
+		httpClient.Start(argc, argv);
+		return 0;
+	}*/
+	{
+		PSHttpClient httpClient = {};
+		httpClient.Start(argc, argv);
+		return 0;
+	}
 	std::cout << "Hello CMake." << std::endl;
 	if (PSWSConfig::Inst()->Init()->Check())
 	{
