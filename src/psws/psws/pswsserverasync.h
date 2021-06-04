@@ -5,6 +5,8 @@
 
 // TODO: Reference additional headers your program requires here.
 
+const char* WSSERVERASYNC_TAG = "ps_server_websocket_listener_async";
+
 #include OATPP_CODEGEN_BEGIN(ApiController) //<-- codegen begin
 
 /**
@@ -67,8 +69,6 @@ public:
  */
 class WSServerListenerAsync : public oatpp::websocket::AsyncWebSocket::Listener {
 private:
-	static constexpr const char* TAG = "ps_server_websocket_listener_async";
-private:
 	/**
 	 * Buffer for messages. Needed for multi-frame messages.
 	 */
@@ -79,7 +79,7 @@ public:
 	 * Called on "ping" frame.
 	 */
 	CoroutineStarter onPing(const std::shared_ptr<AsyncWebSocket>& socket, const oatpp::String& message) override {
-		OATPP_LOGD(TAG, "onPing");
+		OATPP_LOGD(WSSERVERASYNC_TAG, "onPing");
 		return socket->sendPongAsync(message);
 	}
 
@@ -87,7 +87,7 @@ public:
 	 * Called on "pong" frame
 	 */
 	CoroutineStarter onPong(const std::shared_ptr<AsyncWebSocket>& socket, const oatpp::String& message) override {
-		OATPP_LOGD(TAG, "onPong");
+		OATPP_LOGD(WSSERVERASYNC_TAG, "onPong");
 		return nullptr; // do nothing
 	}
 
@@ -95,7 +95,7 @@ public:
 	 * Called on "close" frame
 	 */
 	CoroutineStarter onClose(const std::shared_ptr<AsyncWebSocket>& socket, v_uint16 code, const oatpp::String& message) override {
-		OATPP_LOGD(TAG, "onClose code=%d", code);
+		OATPP_LOGD(WSSERVERASYNC_TAG, "onClose code=%d", code);
 		return nullptr; // do nothing
 	}
 
@@ -109,10 +109,10 @@ public:
 			auto wholeMessage = m_messageBuffer.toString();
 			m_messageBuffer.clear();
 
-			OATPP_LOGD(TAG, "onMessage message='%s'", wholeMessage->c_str());
+			OATPP_LOGD(WSSERVERASYNC_TAG, "onMessage message='%s'", wholeMessage->c_str());
 
 			/* Send message in reply */
-			return socket->sendOneFrameTextAsync("Hello from oatpp!: " + wholeMessage);
+			return socket->sendOneFrameTextAsync("Hello !: " + wholeMessage);
 
 		}
 		else if (size > 0) { // message frame received
@@ -127,8 +127,6 @@ public:
  * Listener on new WebSocket connections.
  */
 class WSInstanceListenerAsync : public oatpp::websocket::AsyncConnectionHandler::SocketInstanceListener {
-private:
-	static constexpr const char* TAG = "ps_server_websocket_instance_listener_async";
 public:
 	/**
 	* Counter for connected clients.
@@ -142,7 +140,7 @@ public:
 	void onAfterCreate_NonBlocking(const std::shared_ptr<WSServerListenerAsync::AsyncWebSocket>& socket, const std::shared_ptr<const ParameterMap>& params) override {
 
 		WSInstanceListenerAsync::Inst()->SOCKETS_ASYNC++;
-		OATPP_LOGD(TAG, "New Incoming Connection. Connection count=%d", WSInstanceListenerAsync::Inst()->SOCKETS_ASYNC.load());
+		OATPP_LOGD(WSSERVERASYNC_TAG, "New Incoming Connection. Connection count=%d", WSInstanceListenerAsync::Inst()->SOCKETS_ASYNC.load());
 
 		/* In this particular case we create one WSListener per each connection */
 		/* Which may be redundant in many cases */
@@ -155,7 +153,7 @@ public:
 	void onBeforeDestroy_NonBlocking(const std::shared_ptr<WSServerListenerAsync::AsyncWebSocket>& socket) override {
 
 		WSInstanceListenerAsync::Inst()->SOCKETS_ASYNC--;
-		OATPP_LOGD(TAG, "Connection closed. Connection count=%d", WSInstanceListenerAsync::Inst()->SOCKETS_ASYNC.load());
+		OATPP_LOGD(WSSERVERASYNC_TAG, "Connection closed. Connection count=%d", WSInstanceListenerAsync::Inst()->SOCKETS_ASYNC.load());
 
 	}
 public:
@@ -268,7 +266,7 @@ private:
 			oatpp::network::Server server(connectionProvider, connectionHandler);
 
 			/* Priny info about server port */
-			OATPP_LOGI("MyAppServerAsync", "Server running on port %s", connectionProvider->getProperty("port").getData());
+			OATPP_LOGI(WSSERVERASYNC_TAG, "Server running on port %s", connectionProvider->getProperty("port").getData());
 
 			/* Run server */
 			server.run();

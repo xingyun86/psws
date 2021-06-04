@@ -5,6 +5,8 @@
 
 // TODO: Reference additional headers your program requires here.
 
+const char* WSSERVER_TAG = "ps_server_websocket_listener";
+
 #include OATPP_CODEGEN_BEGIN(ApiController) //<-- codegen begin
 
 /**
@@ -59,8 +61,6 @@ public:
  */
 class WSServerListener : public oatpp::websocket::WebSocket::Listener {
 private:
-	static constexpr const char* TAG = "ps_server_websocket_listener";
-private:
 	/**
 	 * Buffer for messages. Needed for multi-frame messages.
 	 */
@@ -71,7 +71,7 @@ public:
 	 * Called on "ping" frame.
 	 */
 	void onPing(const WebSocket& socket, const oatpp::String& message) override {
-		OATPP_LOGD(TAG, "onPing");
+		OATPP_LOGD(WSSERVER_TAG, "onPing");
 		socket.sendPong(message);
 	}
 
@@ -79,14 +79,14 @@ public:
 	 * Called on "pong" frame
 	 */
 	void onPong(const WebSocket& socket, const oatpp::String& message) override {
-		OATPP_LOGD(TAG, "onPong");
+		OATPP_LOGD(WSSERVER_TAG, "onPong");
 	}
 
 	/**
 	 * Called on "close" frame
 	 */
 	void onClose(const WebSocket& socket, v_uint16 code, const oatpp::String& message) override {
-		OATPP_LOGD(TAG, "onClose code=%d", code);
+		OATPP_LOGD(WSSERVER_TAG, "onClose code=%d", code);
 	}
 
 	/**
@@ -99,10 +99,10 @@ public:
 			auto wholeMessage = m_messageBuffer.toString();
 			m_messageBuffer.clear();
 
-			OATPP_LOGD(TAG, "onMessage message='%s'", wholeMessage->c_str());
+			OATPP_LOGD(WSSERVER_TAG, "onMessage message='%s'", wholeMessage->c_str());
 
 			/* Send message in reply */
-			socket.sendOneFrameText("Hello from oatpp!: " + wholeMessage);
+			socket.sendOneFrameText("Hello!: " + wholeMessage);
 
 		}
 		else if (size > 0) { // message frame received
@@ -116,8 +116,6 @@ public:
  * Listener on new WebSocket connections.
  */
 class WSInstanceListener : public oatpp::websocket::ConnectionHandler::SocketInstanceListener {
-private:
-	static constexpr const char* TAG = "ps_server_websocket_instance_listener";
 public:
 	/**
 	 * Counter for connected clients.
@@ -131,7 +129,7 @@ public:
 	void onAfterCreate(const oatpp::websocket::WebSocket& socket, const std::shared_ptr<const ParameterMap>& params) override {
 
 		WSInstanceListener::Inst()->SOCKETS++;
-		OATPP_LOGD(TAG, "New Incoming Connection. Connection count=%d", WSInstanceListener::Inst()->SOCKETS.load());
+		OATPP_LOGD(WSSERVER_TAG, "New Incoming Connection. Connection count=%d", WSInstanceListener::Inst()->SOCKETS.load());
 
 		/* In this particular case we create one WSListener per each connection */
 		/* Which may be redundant in many cases */
@@ -144,7 +142,7 @@ public:
 	void onBeforeDestroy(const oatpp::websocket::WebSocket& socket) override {
 
 		WSInstanceListener::Inst()->SOCKETS--;
-		OATPP_LOGD(TAG, "Connection closed. Connection count=%d", WSInstanceListener::Inst()->SOCKETS.load());
+		OATPP_LOGD(WSSERVER_TAG, "Connection closed. Connection count=%d", WSInstanceListener::Inst()->SOCKETS.load());
 	}
 public:
 	static WSInstanceListener* Inst() {
@@ -223,7 +221,7 @@ private:
 			oatpp::network::Server server(connectionProvider, connectionHandler);
 
 			/* Priny info about server port */
-			OATPP_LOGI("MyApp", "Server running on port %s", connectionProvider->getProperty("port").getData());
+			OATPP_LOGI(WSSERVER_TAG, "Server running on port %s", connectionProvider->getProperty("port").getData());
 
 			/* Run server */
 			server.run();

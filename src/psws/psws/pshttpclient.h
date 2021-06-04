@@ -7,6 +7,8 @@
 
 // TODO: Reference additional headers your program requires here.
 
+const char* HTTPCLIENT_TAG = "ps_httpclient";
+
 class HttpApiClient : public oatpp::web::client::ApiClient {
 #include OATPP_CODEGEN_BEGIN(ApiClient)
 
@@ -26,7 +28,7 @@ class HttpApiClient : public oatpp::web::client::ApiClient {
 class PSHttpClient {
 private:
     std::shared_ptr<oatpp::web::client::RequestExecutor> createOatppExecutor() {
-        OATPP_LOGD("App", "Using Oat++ native HttpRequestExecutor.");
+        OATPP_LOGD(HTTPCLIENT_TAG, "Using native HttpRequestExecutor.");
         auto connectionProvider = oatpp::network::tcp::client::ConnectionProvider::createShared({ "httpbin.org", 80, oatpp::network::Address::IP_4 });
         return oatpp::web::client::HttpRequestExecutor::createShared(connectionProvider);
     }
@@ -92,7 +94,7 @@ private:
     void run() {
         try
         {
-            OATPP_LOGI(TAG, "Application Started");
+            OATPP_LOGI(HTTPCLIENT_TAG, "Application Started");
 
             /* Create ObjectMapper for serialization of DTOs  */
             auto objectMapper = oatpp::parser::json::mapping::ObjectMapper::createShared();
@@ -108,36 +110,36 @@ private:
                 auto client = Request("https://httpbin.org/", "", objectMapper);
                 {
                     auto data = client->doGet("anything/a", "")->readBodyToString();
-                    OATPP_LOGD(TAG, "[doGet] data='%s'", data->c_str());
+                    OATPP_LOGD(HTTPCLIENT_TAG, "[doGet] data='%s'", data->c_str());
                 }
 
                 {
                     auto data = client->doPost("anything/b", "aaa")->readBodyToString();
-                    OATPP_LOGD(TAG, "[doPost] data='%s'", data->c_str());
+                    OATPP_LOGD(HTTPCLIENT_TAG, "[doPost] data='%s'", data->c_str());
                 }
             }
             {
                 auto client = Request("https://www.baidu.com/", "", objectMapper);
                 {
                     auto data = client->doGet("", "")->readBodyToString();
-                    OATPP_LOGD(TAG, "[doGet] data='%s'", data->c_str());
+                    OATPP_LOGD(HTTPCLIENT_TAG, "[doGet] data='%s'", data->c_str());
                 }
 
                 {
                     auto data = client->doPost("anything/b", "aaa")->readBodyToString();
-                    OATPP_LOGD(TAG, "[doPost] data='%s'", data->c_str());
+                    OATPP_LOGD(HTTPCLIENT_TAG, "[doPost] data='%s'", data->c_str());
                 }
             }
             {
                 auto client = Request("http://127.0.0.1:9123/", "", objectMapper);
                 {
                     auto data = client->doGet("json", "")->readBodyToString();
-                    OATPP_LOGD(TAG, "[doGet] data='%s'", data->c_str());
+                    OATPP_LOGD(HTTPCLIENT_TAG, "[doGet] data='%s'", data->c_str());
                 }
 
                 {
                     auto data = client->doPost("anything/b", "aaa")->readBodyToString();
-                    OATPP_LOGD(TAG, "[doPost] data='%s'", data->c_str());
+                    OATPP_LOGD(HTTPCLIENT_TAG, "[doPost] data='%s'", data->c_str());
                 }
             }
 

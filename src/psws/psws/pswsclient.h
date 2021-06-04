@@ -7,12 +7,12 @@
 
 // TODO: Reference additional headers your program requires here.
 
+const char* WSCLIENT_TAG = "ps_client_websocket_listener";
+
 /**
  * WebSocket listener listens on incoming WebSocket events.
  */
 class WSClientListener : public oatpp::websocket::WebSocket::Listener {
-private:
-    static constexpr const char* TAG = "ps_client_websocket_listener";
 private:
     std::mutex& m_writeMutex;
     /**
@@ -29,7 +29,7 @@ public:
      * Called on "ping" frame.
      */
     void onPing(const WebSocket& socket, const oatpp::String& message) override {
-        OATPP_LOGD(TAG, "onPing");
+        OATPP_LOGD(WSCLIENT_TAG, "onPing");
         std::lock_guard<std::mutex> lock(m_writeMutex);
         socket.sendPong(message);
     }
@@ -38,14 +38,14 @@ public:
      * Called on "pong" frame
      */
     void onPong(const WebSocket& socket, const oatpp::String& message) override {
-        OATPP_LOGD(TAG, "onPong");
+        OATPP_LOGD(WSCLIENT_TAG, "onPong");
     }
 
     /**
      * Called on "close" frame
      */
     void onClose(const WebSocket& socket, v_uint16 code, const oatpp::String& message) override {
-        OATPP_LOGD(TAG, "onClose code=%d", code);
+        OATPP_LOGD(WSCLIENT_TAG, "onClose code=%d", code);
     }
 
     /**
@@ -58,7 +58,7 @@ public:
             auto wholeMessage = m_messageBuffer.toString();
             m_messageBuffer.clear();
 
-            OATPP_LOGD(TAG, "on message received '%s'", wholeMessage->c_str());
+            OATPP_LOGD(WSCLIENT_TAG, "on message received '%s'", wholeMessage->c_str());
 
             /* Send message in reply */
             //std::lock_guard<std::mutex> lock(m_writeMutex);
@@ -72,25 +72,20 @@ public:
     }
 };
 
-namespace {
+    static bool finished = false;
+class PSWSClient {
+public:
 
-    const char* TAG = "websocket-client";
-
-    bool finished = false;
-
-    void socketTask(const std::shared_ptr<oatpp::websocket::WebSocket>& websocket) {
+    static void socketTask(const std::shared_ptr<oatpp::websocket::WebSocket>& websocket) {
         websocket->listen();
-        OATPP_LOGD(TAG, "SOCKET CLOSED!!!");
+        OATPP_LOGD(WSCLIENT_TAG, "SOCKET CLOSED!!!");
         finished = true;
     }
-
-}
-class PSWSClient {
 private:
     void run() {
         try
         {
-            OATPP_LOGI(TAG, "Application Started");
+            OATPP_LOGI(WSCLIENT_TAG, "Application Started");
 
             auto connectionProvider = oatpp::network::tcp::client::ConnectionProvider::createShared({ PSWSConfig::Inst()->config->host->c_str()/*"echo.websocket.org"*/, (*PSWSConfig::Inst()->config->port)/*80*/ });
 
@@ -98,7 +93,7 @@ private:
 
             auto connection = connector->connect("/" + oatpp::String(PSWSConfig::Inst()->config->path->c_str()));
 
-            OATPP_LOGI(TAG, "Connected");
+            OATPP_LOGI(WSCLIENT_TAG, "Connected");
 
             auto socket = oatpp::websocket::WebSocket::createShared(connection, true /* maskOutgoingMessages must be true for clients */);
 
@@ -106,11 +101,11 @@ private:
 
             socket->setListener(std::make_shared<WSClientListener>(socketWriteMutex));
 
-            std::thread thread(socketTask, socket);
+            std::thread thread(PSWSClient::socketTask, socket);
 
             while (!finished) {
                 {
-                    OATPP_LOGD(TAG, "sending message...");
+                    OATPP_LOGD(WSCLIENT_TAG, "sending message...");
                     std::lock_guard<std::mutex> lock(socketWriteMutex);
                     socket->sendOneFrameText("hello");
                 }

@@ -8,8 +8,8 @@ int main(int argc, char ** argv)
 	/* set lockingCallback for libressl */
 	oatpp::libressl::Callbacks::setDefaultCallbacks();
 	/*{
-		PSHttpClientAsync httpClient = {};
-		httpClient.Start(argc, argv);
+		PSHttpClientAsync httpClientAsync = {};
+		httpClientAsync.Start(argc, argv);
 		return 0;
 	}*/
 	{
